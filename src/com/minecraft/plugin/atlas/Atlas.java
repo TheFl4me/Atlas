@@ -4,4 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Atlas extends JavaPlugin {
 
+    public void onEnable() {
+
+    }
 }
