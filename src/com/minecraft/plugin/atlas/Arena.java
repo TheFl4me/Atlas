@@ -6,7 +6,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -26,7 +31,7 @@ public class Arena {
         this.locations = new HashMap<>();
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
-        this.size = 100;
+        this.size = 200;
     }
 
     public List<UUID> getAliveList() {
@@ -79,7 +84,7 @@ public class Arena {
         netherBorder.setCenter(0,0);
         netherBorder.setSize(this.getSize() / 8);
 
-        World end = Bukkit.getWorld("world_end");
+        World end = Bukkit.getWorld("world_the_end");
         WorldBorder endBorder = end.getWorldBorder();
 
         endBorder.setCenter(0,0);
@@ -111,6 +116,7 @@ public class Arena {
         this.removeAlive(player);
         this.removeLocation(player);
 
+        this.updateScoreboard();
         player.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -170,12 +176,12 @@ public class Arena {
                     "blockX = " + blockLoc.getBlockX() + ", " +
                     "blockY = " + blockLoc.getBlockY() + ", " +
                     "blockZ = " + blockLoc.getBlockZ() + ", " +
-                    "blockWorld = " + blockLoc.getWorld().getName() + ", " +
+                    "blockWorld = '" + blockLoc.getWorld().getName() + "', " +
                     "locX = " + lasLoc.getBlockX() + ", " +
                     "locY = " + lasLoc.getBlockY() + ", " +
-                    "locZ = " + lasLoc.getBlockZ() + " " +
-                    "locWorld = " + lasLoc.getWorld().getName() + ", " +
-                    "WHERE UUID = " + uuid.toString() + ");");
+                    "locZ = " + lasLoc.getBlockZ() + ", " +
+                    "locWorld = '" + lasLoc.getWorld().getName() + "' " +
+                    "WHERE uuid = '" + uuid.toString() + "';");
         }
     }
 
@@ -184,7 +190,7 @@ public class Arena {
         try {
             ResultSet sets = db.select(DB_PLAYERS);
             while (sets.next()) {
-                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(sets.getString("UUID")));
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(sets.getString("uuid")));
                 boolean alive = sets.getBoolean("alive");
                 int blockX = sets.getInt("blockX");
                 int blockY = sets.getInt("blockY");
@@ -205,6 +211,49 @@ public class Arena {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void reset() {
+
+        for (UUID uuid : this.getPlayerList().keySet()) {
+            BlockState oldBlockState = this.getPlayerList().get(uuid);
+            Block oldBlock = Bukkit.getWorld("world").getBlockAt(oldBlockState.getLocation());
+
+            oldBlock.setType(Material.AIR);
+            oldBlockState.setData(oldBlockState.getData());
+            oldBlockState.update();
+        }
+
+        this.players.clear();
+        this.combatLogTask.clear();
+        this.locations.clear();
+        this.alive.clear();
+
+        Database db = Atlas.getDataBase();
+        db.execute("DROP TABLE " + DB_PLAYERS);
+
+        Bukkit.getServer().reload();
+    }
+
+    public void updateScoreboard() {
+        for(Player players : Bukkit.getOnlinePlayers()) {
+            ChatColor color = ChatColor.GRAY;
+            Scoreboard board = players.getScoreboard();
+            board.getObjectives().forEach(Objective::unregister);
+
+            Objective obj = board.registerNewObjective("test", "dummy");
+            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+            obj.setDisplayName(ChatColor.GOLD + "Alive:");
+
+            int i = 0;
+            for(UUID uuid : this.getAliveList()) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+
+                Score name = obj.getScore(color + player.getName());
+                name.setScore(i);
+                i++;
+            }
         }
     }
 }

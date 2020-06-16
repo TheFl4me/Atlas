@@ -23,9 +23,9 @@ public class SpawnEventListener implements Listener {
         Player player = event.getPlayer();
         Database db = Atlas.getDataBase();
 
-        if (!db.containsValue(Atlas.DB_PLAYERS, "UUID", player.getUniqueId().toString())) {
-            db.execute("INSERT INTO " + Atlas.DB_PLAYERS + "(" +
-                    "UUID" +
+        if (!db.containsValue(Atlas.DB_PLAYERS, "uuid", player.getUniqueId().toString())) {
+            db.execute("INSERT INTO " + Atlas.DB_PLAYERS + " (" +
+                    "uuid" +
                     ", alive" +
                     ", blockX" +
                     ", blockY" +
@@ -36,16 +36,16 @@ public class SpawnEventListener implements Listener {
                     ", locZ" +
                     ", locWorld" +
                     ") VALUES (" +
-                    "" + player.getUniqueId().toString() +", " +
+                    "'" + player.getUniqueId().toString() +"', " +
                     "" + true + ", " +
                     "" + 0 + ", " +
                     "" + 0 + ", " +
                     "" + 0 + ", " +
-                    "" + "world" + ", " +
+                    "" + "'world'" + ", " +
                     "" + 0 + ", " +
                     "" + 0 + ", " +
-                    "" + 0 + "" +
-                    "" + "world" + "" +
+                    "" + 0 + ", " +
+                    "" + "'world'" + "" +
                     ");");
         }
 
@@ -76,5 +76,7 @@ public class SpawnEventListener implements Listener {
         } else {
             player.setGameMode(GameMode.SURVIVAL);
         }
+
+        arena.updateScoreboard();
     }
 }

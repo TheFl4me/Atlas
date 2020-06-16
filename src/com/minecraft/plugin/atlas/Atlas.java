@@ -17,8 +17,8 @@ import java.sql.SQLException;
 
 public class Atlas extends JavaPlugin {
 
-    public static final String DIRECTORY_GENERAL = "plugins" + File.separator + "General";
-    public static final String DIRECTORY_DATABASE = DIRECTORY_GENERAL + File.separator + "Database.yml";
+    public static final String DIRECTORY_ATLAS = "plugins" + File.separator + "Atlas";
+    public static final String DIRECTORY_DATABASE = DIRECTORY_ATLAS + File.separator + "Database.yml";
 
     public static final String DB_PLAYERS = "players";
 
@@ -57,6 +57,7 @@ public class Atlas extends JavaPlugin {
         getCommand("lag").setExecutor(new LagCommand());
         getCommand("ping").setExecutor(new PingCommand());
         getCommand("status").setExecutor(new StatusCommand());
+        getCommand("reset").setExecutor(new ResetCommand());
     }
 
     private void loadEvents() {
@@ -72,7 +73,7 @@ public class Atlas extends JavaPlugin {
         File database = new File(DIRECTORY_DATABASE);
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(database);
 
-        String prefix = "[General - Database]";
+        String prefix = "[Atlas - Database]";
         String host = cfg.getString("host");
         String user = cfg.getString("user");
         String pass = cfg.getString("pass");
@@ -115,7 +116,7 @@ public class Atlas extends JavaPlugin {
     }
 
     private void loadFiles() {
-        File general = new File(DIRECTORY_GENERAL);
+        File general = new File(DIRECTORY_ATLAS);
         File database = new File(DIRECTORY_DATABASE);
         if (!general.exists())
             general.mkdir();
