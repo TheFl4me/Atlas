@@ -3,6 +3,7 @@ package com.minecraft.plugin.atlas.listeners;
 import com.minecraft.plugin.atlas.Arena;
 import com.minecraft.plugin.atlas.Atlas;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,12 +13,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
 public class EmeraldEventListener implements Listener {
 
+    //TODO: Entities can still break the block
     @EventHandler
     public void onEmeraldBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -29,11 +31,8 @@ public class EmeraldEventListener implements Listener {
                 Player player = (Player) event.getPlayer();
                 Location location = arena.getLastKnownLocations().get(target);
 
-                player.sendMessage("The players last known location to whom this block belongs is:\n" +
-                        "World: " + location.getWorld().getName() + "\n" +
-                        "X: " + Integer.toString(location.getBlockX()) + "\n" +
-                        "Z: " + Integer.toString(location.getBlockZ()) + "\n" +
-                        "Y: " + Integer.toString(location.getBlockY()));
+                player.sendMessage(ChatColor.RED + "Your compass is now locked onto the last known position in the \"" + location.getWorld().getName() + "\" world of this player.");
+                player.setCompassTarget(location);
             }
         }
     }

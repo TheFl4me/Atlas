@@ -2,6 +2,7 @@ package com.minecraft.plugin.atlas.listeners;
 
 import com.minecraft.plugin.atlas.Arena;
 import com.minecraft.plugin.atlas.Atlas;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +16,7 @@ public class DeathEventListener implements Listener {
         Arena arena = Atlas.getArena();
         if (arena.getAliveList().contains(player.getUniqueId())) {
             arena.eliminate(player);
+            event.setDeathMessage(ChatColor.AQUA + player.getName() + " has been eliminated.");
         }
     }
 }
