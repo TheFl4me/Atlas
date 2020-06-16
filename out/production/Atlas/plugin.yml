@@ -1,3 +1,10 @@
   name: Atlas
   main: com.minecraft.plugin.atlas.Atlas
   version: 0.0.0
+  author: TheFl4me
+  commands:
+    inventorysee:
+      aliases: [invsee]
+    ping:
+    lag:
+    status:
