@@ -42,6 +42,6 @@ public class PingCommand implements CommandExecutor {
             color = ChatColor.GOLD;
         else
             color = ChatColor.RED;
-        p.sendMessage(z.getDisplayName() + "'s ping is " + Integer.toString(ping) + " ms.");
+        p.sendMessage(z.getDisplayName() + "'s ping is " + color + Integer.toString(ping) + " ms.");
     }
 }

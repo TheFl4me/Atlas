@@ -70,36 +70,36 @@ public class Server {
         StringBuilder sb = new StringBuilder(40);
         long years = sec / unitYears;
         if (years > 0) {
-            sb.append(years + (years == 1 ? "year" : "years"));
+            sb.append(years).append(years == 1 ? "year" : "years");
             sec -= years * unitYears;
         }
         long months = sec / unitMonths;
         if (months > 0) {
-            sb.append(months + (months == 1 ? "month" : "months"));
+            sb.append(months).append(months == 1 ? "month" : "months");
             sec -= months * unitMonths;
         }
         long weeks = sec / unitWeeks;
         if (weeks > 0) {
-            sb.append(weeks + (weeks == 1 ? "week" : "weeks"));
+            sb.append(weeks).append(weeks == 1 ? "week" : "weeks");
             sec -= weeks * unitWeeks;
         }
         long days = sec / unitDays;
         if (days > 0) {
-            sb.append(days + (days == 1 ? "day" : "days"));
+            sb.append(days).append(days == 1 ? "day" : "days");
             sec -= days * unitDays;
         }
         long hours = sec / unitHours;
         if (hours > 0) {
-            sb.append(hours + (hours == 1 ? "hour" : "hours"));
+            sb.append(hours).append(hours == 1 ? "hour" : "hours");
             sec -= hours * unitHours;
         }
         long minutes = sec / unitMin;
         if (minutes > 0) {
-            sb.append(minutes + (minutes == 1 ? "minute" : "minutes"));
+            sb.append(minutes).append(minutes == 1 ? "minute" : "minutes");
             sec -= minutes * unitMin;
         }
         if (sec > 0) {
-            sb.append(sec + (sec == 1 ? "second" : "seconds"));
+            sb.append(sec).append(sec == 1 ? "second" : "seconds");
         }
         if (sb.length() > 1) {
             sb.replace(sb.length() - 1, sb.length(), "");

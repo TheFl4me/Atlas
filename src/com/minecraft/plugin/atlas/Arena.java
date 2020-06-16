@@ -1,12 +1,17 @@
 package com.minecraft.plugin.atlas;
 
+import com.minecraft.plugin.atlas.database.Database;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
+
+import static com.minecraft.plugin.atlas.Atlas.DB_PLAYERS;
 
 public class Arena {
 
@@ -29,6 +34,10 @@ public class Arena {
     }
 
     public void addAlive(Player player) {
+        this.alive.add(player.getUniqueId());
+    }
+
+    public void addAlive(OfflinePlayer player) {
         this.alive.add(player.getUniqueId());
     }
 
@@ -70,11 +79,19 @@ public class Arena {
         netherBorder.setCenter(0,0);
         netherBorder.setSize(this.getSize() / 8);
 
-        //TODO: Ask domi about end in 1.8 and wether border is needed or not.
+        World end = Bukkit.getWorld("world_end");
+        WorldBorder endBorder = end.getWorldBorder();
+
+        endBorder.setCenter(0,0);
+        endBorder.setSize(400);
 
     }
 
     public void addPlayer(Player player, BlockState emerald) {
+        this.players.put(player.getUniqueId(), emerald);
+    }
+
+    public void addPlayer(OfflinePlayer player, BlockState emerald) {
         this.players.put(player.getUniqueId(), emerald);
     }
 
@@ -98,6 +115,10 @@ public class Arena {
     }
 
     public void addLocation(Player player, Location location) {
+        this.locations.put(player.getUniqueId(), location);
+    }
+
+    public void addLocation(OfflinePlayer player, Location location) {
         this.locations.put(player.getUniqueId(), location);
     }
 
@@ -136,5 +157,54 @@ public class Arena {
     public void cancelCombatLog(Player player) {
         this.getCombatLogTask(player).cancel();
         this.combatLogTask.remove(player.getUniqueId());
+    }
+
+    public void pushToDataBase() {
+        Database db = Atlas.getDataBase();
+        for (UUID uuid : this.getPlayerList().keySet()) {
+
+            Location blockLoc = this.getPlayerList().get(uuid).getLocation();
+            Location lasLoc = this.getLastKnownLocations().get(uuid);
+
+            db.execute("UPDATE " + Atlas.DB_PLAYERS + " SET " +
+                    "blockX = " + blockLoc.getBlockX() + ", " +
+                    "blockY = " + blockLoc.getBlockY() + ", " +
+                    "blockZ = " + blockLoc.getBlockZ() + ", " +
+                    "blockWorld = " + blockLoc.getWorld().getName() + ", " +
+                    "locX = " + lasLoc.getBlockX() + ", " +
+                    "locY = " + lasLoc.getBlockY() + ", " +
+                    "locZ = " + lasLoc.getBlockZ() + " " +
+                    "locWorld = " + lasLoc.getWorld().getName() + ", " +
+                    "WHERE UUID = " + uuid.toString() + ");");
+        }
+    }
+
+    public void pullFromDataBase() {
+        Database db = Atlas.getDataBase();
+        try {
+            ResultSet sets = db.select(DB_PLAYERS);
+            while (sets.next()) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(sets.getString("UUID")));
+                boolean alive = sets.getBoolean("alive");
+                int blockX = sets.getInt("blockX");
+                int blockY = sets.getInt("blockY");
+                int blockZ = sets.getInt("blockZ");
+                World blockWorld = Bukkit.getWorld(sets.getString("blockWorld"));
+                int locX = sets.getInt("locX");
+                int locY = sets.getInt("locY");
+                int locZ = sets.getInt("locZ");
+                World locWorld = Bukkit.getWorld(sets.getString("locWorld"));
+
+                Block block = Bukkit.getWorld(blockWorld.getName()).getBlockAt(blockX, blockY, blockZ);
+                Location lastLoc = new Location(locWorld, locX, locY, locZ);
+
+                this.addPlayer(player, block.getState());
+                this.addLocation(player, lastLoc);
+                if (alive)
+                    this.addAlive(player);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -13,27 +13,33 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import java.util.UUID;
 
 public class EmeraldEventListener implements Listener {
 
-    //TODO: Entities can still break the block
     @EventHandler
     public void onEmeraldBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Arena arena = Atlas.getArena();
         if (block.getType() == Material.EMERALD_BLOCK && arena.getPlayerList().containsValue(block.getState())) {
             event.setCancelled(true);
-            if (event.getPlayer() instanceof Player) {
-                UUID target = Bukkit.getOfflinePlayer(arena.getEmeraldList().get(block.getState())).getUniqueId();
-                Player player = (Player) event.getPlayer();
-                Location location = arena.getLastKnownLocations().get(target);
+            UUID target = Bukkit.getOfflinePlayer(arena.getEmeraldList().get(block.getState())).getUniqueId();
+            Player player = event.getPlayer();
+            Location location = arena.getLastKnownLocations().get(target);
 
-                player.sendMessage(ChatColor.RED + "Your compass is now locked onto the last known position in the \"" + location.getWorld().getName() + "\" world of this player.");
-                player.setCompassTarget(location);
-            }
+            player.sendMessage(ChatColor.RED + "Your compass is now locked onto the last known position in the \"" + location.getWorld().getName() + "\" world of this player.");
+            player.setCompassTarget(location);
+        }
+    }
+
+    @EventHandler
+    public void cancelEntityBlockBreak(EntityChangeBlockEvent event) {
+        Block block = event.getBlock();
+        Arena arena = Atlas.getArena();
+        if (block.getType() == Material.EMERALD_BLOCK && arena.getPlayerList().containsValue(block.getState())) {
+            event.setCancelled(true);
         }
     }
 
@@ -53,6 +59,8 @@ public class EmeraldEventListener implements Listener {
 
             arena.removePlayer(player);
             arena.addPlayer(player, block.getState());
+
+            arena.pushToDataBase();
         }
     }
 }
