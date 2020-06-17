@@ -1,4 +1,4 @@
-package com.minecraft.plugin.atlas;
+package com.minecraft.plugin.atlas.utils;
 
 public enum Unit {
 

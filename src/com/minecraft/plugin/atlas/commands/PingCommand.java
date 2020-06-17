@@ -1,6 +1,6 @@
 package com.minecraft.plugin.atlas.commands;
 
-import com.minecraft.plugin.atlas.Server;
+import com.minecraft.plugin.atlas.utils.Server;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -42,6 +42,6 @@ public class PingCommand implements CommandExecutor {
             color = ChatColor.GOLD;
         else
             color = ChatColor.RED;
-        p.sendMessage(z.getDisplayName() + "'s ping is " + color + Integer.toString(ping) + " ms.");
+        p.sendMessage(ChatColor.GRAY + z.getDisplayName() + "'s ping is " + color + Integer.toString(ping) + " ms.");
     }
 }

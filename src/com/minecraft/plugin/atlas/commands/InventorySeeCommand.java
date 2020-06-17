@@ -12,7 +12,7 @@ public class InventorySeeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
 
-        if (command.getName().equalsIgnoreCase("inventorysee")) {
+        if (command.getName().equalsIgnoreCase("invsee")) {
             if (commandSender instanceof Player) {
                 Player player = (Player) commandSender;
                 if (player.isOp()) {

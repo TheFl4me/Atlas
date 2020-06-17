@@ -1,4 +1,4 @@
-package com.minecraft.plugin.atlas;
+package com.minecraft.plugin.atlas.utils;
 
 public class Lag implements Runnable {
 

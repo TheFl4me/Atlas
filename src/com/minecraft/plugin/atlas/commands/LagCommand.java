@@ -1,6 +1,6 @@
 package com.minecraft.plugin.atlas.commands;
 
-import com.minecraft.plugin.atlas.Server;
+import com.minecraft.plugin.atlas.utils.Server;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

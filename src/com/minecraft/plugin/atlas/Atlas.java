@@ -5,6 +5,7 @@ import com.minecraft.plugin.atlas.database.Database;
 import com.minecraft.plugin.atlas.database.DatabaseCore;
 import com.minecraft.plugin.atlas.database.MySQLCore;
 import com.minecraft.plugin.atlas.listeners.*;
+import com.minecraft.plugin.atlas.utils.Server;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,6 +17,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Atlas extends JavaPlugin {
+
+    //TODO: Feast?
+
+    // spectators can still join after reset and are survival,
 
     public static final String DIRECTORY_ATLAS = "plugins" + File.separator + "Atlas";
     public static final String DIRECTORY_DATABASE = DIRECTORY_ATLAS + File.separator + "Database.yml";
@@ -33,13 +38,15 @@ public class Atlas extends JavaPlugin {
 
         loadFiles();
         loadDatabase();
+        loadCommands();
+        loadEvents();
 
         arena = new Arena();
         getArena().initialize();
         getArena().pullFromDataBase();
 
-        loadCommands();
-        loadEvents();
+        Server server = new Server();
+        server.initiate();
     }
 
     public void onDisable() {
@@ -53,7 +60,7 @@ public class Atlas extends JavaPlugin {
     }
 
     private void loadCommands() {
-        getCommand("inventorysee").setExecutor(new InventorySeeCommand());
+        getCommand("invsee").setExecutor(new InventorySeeCommand());
         getCommand("lag").setExecutor(new LagCommand());
         getCommand("ping").setExecutor(new PingCommand());
         getCommand("status").setExecutor(new StatusCommand());

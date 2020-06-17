@@ -10,11 +10,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../1.8.8/craftbukkit-1.8.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../domi/craftbukkit.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../1.8.8/craftbukkit-1.8.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../domi/craftbukkit.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

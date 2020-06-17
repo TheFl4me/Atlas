@@ -1,5 +1,6 @@
-package com.minecraft.plugin.atlas;
+package com.minecraft.plugin.atlas.utils;
 
+import com.minecraft.plugin.atlas.Atlas;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -18,7 +19,7 @@ public class Server {
         return server;
     }
 
-    public Server(String type) {
+    public Server() {
         server = this;
     }
 

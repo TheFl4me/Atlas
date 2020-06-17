@@ -12,8 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.util.UUID;
 
@@ -40,11 +43,9 @@ public class EmeraldEventListener implements Listener {
 
     @EventHandler
     public void cancelEntityBlockBreak(EntityChangeBlockEvent event) {
-        Block block = event.getBlock();
         Arena arena = Atlas.getArena();
-        if (block.getType() == Material.EMERALD_BLOCK && arena.getPlayerList().containsValue(block.getState())) {
+        if (arena.getPlayerList().containsValue(event.getBlock().getState()))
             event.setCancelled(true);
-        }
     }
 
     @EventHandler
@@ -55,7 +56,7 @@ public class EmeraldEventListener implements Listener {
 
         if (block.getType() == Material.EMERALD_BLOCK && arena.getPlayerList().containsKey(player.getUniqueId())) {
             BlockState oldBlockState = arena.getPlayerList().get(player.getUniqueId());
-            Block oldBlock = Bukkit.getWorld("world").getBlockAt(oldBlockState.getLocation());
+            Block oldBlock = oldBlockState.getWorld().getBlockAt(oldBlockState.getLocation());
 
             oldBlock.setType(Material.AIR);
             oldBlockState.setData(oldBlockState.getData());
@@ -66,5 +67,31 @@ public class EmeraldEventListener implements Listener {
 
             arena.pushToDataBase();
         }
+    }
+
+    @EventHandler
+    public void onEmeraldPistonExtend(BlockPistonExtendEvent event) {
+        Arena arena = Atlas.getArena();
+        for (Block block : event.getBlocks()) {
+            if (arena.getPlayerList().containsValue(block.getState())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEmeraldPistonRetract(BlockPistonRetractEvent event) {
+        Arena arena = Atlas.getArena();
+        for (Block block : event.getBlocks()) {
+            if (arena.getPlayerList().containsValue(block.getState())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEmeraldExplode(EntityExplodeEvent event) {
+        Arena arena = Atlas.getArena();
+        event.blockList().removeIf(block -> arena.getPlayerList().containsValue(block.getState()));
     }
 }

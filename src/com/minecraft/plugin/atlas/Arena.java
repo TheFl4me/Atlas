@@ -3,7 +3,9 @@ package com.minecraft.plugin.atlas;
 import com.minecraft.plugin.atlas.database.Database;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -11,12 +13,9 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
-import static com.minecraft.plugin.atlas.Atlas.DB_PLAYERS;
 
 public class Arena {
 
@@ -25,6 +24,7 @@ public class Arena {
     private List<UUID> alive;
     private Map<UUID, BukkitRunnable> combatLogTask;
     private int size;
+    private boolean ingame;
 
     public Arena() {
         this.players = new HashMap<>();
@@ -32,6 +32,7 @@ public class Arena {
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
         this.size = 200;
+        this.ingame = true;
     }
 
     public List<UUID> getAliveList() {
@@ -77,15 +78,18 @@ public class Arena {
         world.setSpawnLocation(0 , 64,0);
         worldBorder.setCenter(0, 0);
         worldBorder.setSize(this.getSize());
+        world.setDifficulty(Difficulty.HARD);
 
         World nether = Bukkit.getWorld("world_nether");
         WorldBorder netherBorder = nether.getWorldBorder();
+        nether.setDifficulty(Difficulty.HARD);
 
         netherBorder.setCenter(0,0);
         netherBorder.setSize(this.getSize() / 8);
 
         World end = Bukkit.getWorld("world_the_end");
         WorldBorder endBorder = end.getWorldBorder();
+        end.setDifficulty(Difficulty.HARD);
 
         endBorder.setCenter(0,0);
         endBorder.setSize(400);
@@ -106,7 +110,7 @@ public class Arena {
 
     public void eliminate(Player player) {
         BlockState blockState = this.getPlayerList().get(player.getUniqueId());
-        Block block = Bukkit.getWorld("world").getBlockAt(blockState.getLocation());
+        Block block = blockState.getWorld().getBlockAt(blockState.getLocation());
 
         block.setType(Material.AIR);
         blockState.setData(blockState.getData());
@@ -114,10 +118,36 @@ public class Arena {
 
         this.removePlayer(player);
         this.removeAlive(player);
-        this.removeLocation(player);
 
         this.updateScoreboard();
         player.setGameMode(GameMode.SPECTATOR);
+
+        //Check for winner
+        if (this.getAliveList().size() == 1) {
+            OfflinePlayer winner = Bukkit.getOfflinePlayer(this.getAliveList().get(0));
+            this.win(winner);
+        }
+    }
+
+    public void win(OfflinePlayer winner) {
+        this.setInGame(false);
+        if (winner.isOnline()) {
+            Player player = (Player) winner;
+            if(this.isCombatLog(player)) {
+                this.cancelCombatLog(player);
+                player.sendMessage(ChatColor.GREEN + "You can now safely disconnect again.");
+            }
+        }
+        Bukkit.getScheduler().runTaskTimer(Atlas.getPlugin(), () -> {
+            if (winner.isOnline()) {
+                Player player = (Player) winner;
+                player.getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+            }
+            for(Player players : Bukkit.getOnlinePlayers()) {
+                players.sendMessage(ChatColor.GOLD + winner.getName() + " has won the tournament!!");
+            }
+        }, 40, 40);
+        Bukkit.getScheduler().runTaskLater(Atlas.getPlugin(), this::reset, 600);
     }
 
     public void addLocation(Player player, Location location) {
@@ -150,7 +180,7 @@ public class Arena {
                 Player p = Bukkit.getPlayer(player.getUniqueId());
                 if(p != null)
                     if (isCombatLog(p)) {
-                        p.sendMessage(ChatColor.GREEN + "You can now safely disconnect again.");
+                        player.sendMessage(ChatColor.GREEN + "You can now safely disconnect again.");
                         cancelCombatLog(p);
                     }
                     else
@@ -163,6 +193,14 @@ public class Arena {
     public void cancelCombatLog(Player player) {
         this.getCombatLogTask(player).cancel();
         this.combatLogTask.remove(player.getUniqueId());
+    }
+
+    public boolean isInGame() {
+        return this.ingame;
+    }
+
+    public void setInGame(boolean bool) {
+        this.ingame = bool;
     }
 
     public void pushToDataBase() {
@@ -188,7 +226,7 @@ public class Arena {
     public void pullFromDataBase() {
         Database db = Atlas.getDataBase();
         try {
-            ResultSet sets = db.select(DB_PLAYERS);
+            ResultSet sets = db.select(Atlas.DB_PLAYERS);
             while (sets.next()) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(sets.getString("uuid")));
                 boolean alive = sets.getBoolean("alive");
@@ -218,7 +256,7 @@ public class Arena {
 
         for (UUID uuid : this.getPlayerList().keySet()) {
             BlockState oldBlockState = this.getPlayerList().get(uuid);
-            Block oldBlock = Bukkit.getWorld("world").getBlockAt(oldBlockState.getLocation());
+            Block oldBlock = oldBlockState.getWorld().getBlockAt(oldBlockState.getLocation());
 
             oldBlock.setType(Material.AIR);
             oldBlockState.setData(oldBlockState.getData());
@@ -231,7 +269,7 @@ public class Arena {
         this.alive.clear();
 
         Database db = Atlas.getDataBase();
-        db.execute("DROP TABLE " + DB_PLAYERS);
+        db.execute("DROP TABLE " + Atlas.DB_PLAYERS);
 
         Bukkit.getServer().reload();
     }
@@ -255,5 +293,35 @@ public class Arena {
                 i++;
             }
         }
+    }
+
+    public void spawn(Player player) {
+        Random r1 = new Random();
+        Random r2 = new Random();
+        int rX = r1.nextInt(this.getSize()) - this.getSize() / 2;
+        int rZ = r2.nextInt(this.getSize()) - this.getSize() / 2;
+
+        World world = Bukkit.getWorld("world");
+
+        Location emeraldLoc = world.getHighestBlockAt(rX, rZ).getLocation();
+        Location spawn = emeraldLoc.clone();
+        spawn.setY(spawn.getY() + 1);
+
+        Block feet = spawn.getBlock();
+        Block head = feet.getRelative(BlockFace.UP);
+
+        for (BlockFace face : BlockFace.values()) {
+            feet.getRelative(face).setType(Material.AIR);
+            head.getRelative(face).setType(Material.AIR);
+        }
+
+        Block emerald = emeraldLoc.getWorld().getBlockAt(emeraldLoc);
+        emerald.setType(Material.EMERALD_BLOCK);
+
+        player.teleport(spawn);
+
+        this.addPlayer(player, emerald.getState());
+        this.addAlive(player);
+        this.addLocation(player, player.getLocation());
     }
 }
