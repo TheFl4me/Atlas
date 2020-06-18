@@ -19,7 +19,7 @@ public class PingCommand implements CommandExecutor {
                 if (args.length == 0) {
                     sendPingInfo(p, p);
                 } else {
-                    @SuppressWarnings("deprecation") Player z = Bukkit.getPlayer(args[0]);
+                    Player z = Bukkit.getPlayer(args[0]);
                     if (z != null) {
                         sendPingInfo(p, z);
                     }

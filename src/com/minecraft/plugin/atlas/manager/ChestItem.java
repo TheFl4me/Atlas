@@ -8,8 +8,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.*;
 
-import static org.bukkit.enchantments.Enchantment.ARROW_DAMAGE;
-
 public enum ChestItem {
 
     BOW(5, new ItemStack(Material.BOW)),

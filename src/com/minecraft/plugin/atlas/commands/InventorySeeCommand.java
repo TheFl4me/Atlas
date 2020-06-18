@@ -17,7 +17,7 @@ public class InventorySeeCommand implements CommandExecutor {
                 Player player = (Player) commandSender;
                 if (player.isOp()) {
                     if (args.length > 0) {
-                        @SuppressWarnings("deprecation") Player z = Bukkit.getPlayer(args[0]);
+                        Player z = Bukkit.getPlayer(args[0]);
                         if (z != null) {
                             Inventory inv = z.getPlayer().getInventory();
                             player.openInventory(inv);
