@@ -23,7 +23,7 @@ public class Feast {
 
         Arena arena = Atlas.getArena();
 
-        int radius = 10;
+        int radius = 20;
         int range = arena.getSize() - radius;
 
         Random r1 = new Random();

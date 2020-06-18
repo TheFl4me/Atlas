@@ -2,7 +2,6 @@ package com.minecraft.plugin.atlas.manager;
 
 import com.minecraft.plugin.atlas.Atlas;
 import com.minecraft.plugin.atlas.database.Database;
-import com.minecraft.plugin.atlas.manager.Feast;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -35,7 +34,7 @@ public class Arena {
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
         this.feasts = new ArrayList<>();
-        this.size = 200;
+        this.size = 2000;
         this.ingame = true;
     }
 
