@@ -34,7 +34,7 @@ public class Arena {
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
         this.feasts = new ArrayList<>();
-        this.size = 2000;
+        this.size = 25000;
         this.ingame = true;
     }
 
@@ -50,7 +50,7 @@ public class Arena {
         this.alive.add(player.getUniqueId());
     }
 
-    public void removeAlive(Player player) {
+    public void removeAlive(OfflinePlayer player) {
         this.alive.remove(player.getUniqueId());
     }
 
@@ -107,11 +107,11 @@ public class Arena {
         this.players.put(player.getUniqueId(), emerald);
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(OfflinePlayer player) {
         this.players.remove(player.getUniqueId());
     }
 
-    public void eliminate(Player player) {
+    public void eliminate(OfflinePlayer player) {
         BlockState blockState = this.getPlayerList().get(player.getUniqueId());
         Block block = blockState.getWorld().getBlockAt(blockState.getLocation());
 
@@ -123,7 +123,6 @@ public class Arena {
         this.removeAlive(player);
 
         this.updateScoreboard();
-        player.setGameMode(GameMode.SPECTATOR);
 
         //Check for winner
         if (this.getAliveList().size() == 1) {

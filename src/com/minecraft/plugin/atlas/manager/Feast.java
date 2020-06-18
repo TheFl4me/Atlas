@@ -1,12 +1,15 @@
 package com.minecraft.plugin.atlas.manager;
 
 import com.minecraft.plugin.atlas.Atlas;
+import com.minecraft.plugin.atlas.utils.Server;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -17,23 +20,31 @@ public class Feast {
     private List<Location> chests;
     private Location table;
     private long spawnTime;
+    private World world;
+    private BukkitRunnable task;
+    private int timer;
+
 
     public Feast() {
         this.spawnTime = System.currentTimeMillis();
 
         Arena arena = Atlas.getArena();
 
+        Random r4 = new Random();
+        List<World> worlds = Arrays.asList(Bukkit.getWorld("world"), Bukkit.getWorld("world"), Bukkit.getWorld("world"), Bukkit.getWorld("world_nether"));
+        this.world = worlds.get(r4.nextInt(worlds.size()));
         int radius = 20;
-        int range = arena.getSize() - radius;
+        int range = arena.getSize() / (this.getWorld().getName().equalsIgnoreCase("world") ? 1 : 8) - radius;
 
         Random r1 = new Random();
         Random r2 = new Random();
         Random r3 = new Random();
+
         int rX = r1.nextInt(range) - range / 2;
         int rZ = r2.nextInt(range) - range / 2;
-        int rY = r3.nextInt(120);
+        int rY = r3.nextInt(90);
 
-        Location center = new Location(Bukkit.getWorld("world"), rX, rY, rZ);
+        Location center = new Location(world, rX, rY + 6, rZ);
         this.grass = this.allocateCylinder(center, radius, 1);
 
         center.setY(center.getY() + 1);
@@ -59,6 +70,39 @@ public class Feast {
         this.chests.add(tableBlock.getRelative(BlockFace.NORTH_WEST).getRelative(BlockFace.NORTH_WEST).getLocation());
         this.chests.add(tableBlock.getRelative(BlockFace.SOUTH_EAST).getRelative(BlockFace.SOUTH_EAST).getLocation());
         this.chests.add(tableBlock.getRelative(BlockFace.SOUTH_WEST).getRelative(BlockFace.SOUTH_WEST).getLocation());
+
+        final List<Integer> updates = Arrays.asList(0,1,2,3,4,5,10,30,60, 300, 600, 1800, 3600);
+        Server server = Server.get();
+        spawn();
+        this.timer = 3600;
+        this.task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (updates.contains(getTimer())) {
+                    Bukkit.broadcastMessage(ChatColor.RED + "The Feast will spawn in " + server.getTime(getTimer() * 1000) + "\n" +
+                            "X: " + getTable().getBlockX() + ", Z: " + getTable().getBlockZ() + ", World: " + (getWorld().getName().equalsIgnoreCase("world") ? "Overworld" : "Nether"));
+                }
+                setTimer(getTimer() - 1);
+                if (getTimer() == 0) {
+                    getTask().cancel();
+                    spawnLoot();
+                }
+
+            }
+        };
+        this.task.runTaskTimer(Atlas.getPlugin(), 0, 20);
+    }
+
+    public BukkitRunnable getTask() {
+        return this.task;
+    }
+
+    public int getTimer() {
+        return this.timer;
+    }
+
+    public void setTimer(int timer) {
+        this.timer = timer;
     }
 
     public List<Location> getGrass() {
@@ -79,6 +123,10 @@ public class Feast {
 
     public long getSpawnTime() {
         return this.spawnTime;
+    }
+
+    public World getWorld() {
+        return this.world;
     }
 
     private List<Location> allocateCylinder(Location loc, int r, int height) {
@@ -119,7 +167,8 @@ public class Feast {
             }
         }
 
-        Bukkit.broadcastMessage(ChatColor.RED + "A feast has spawned at X: " + this.getTable().getBlockX() + ", Z: " + this.getTable().getBlockZ());
+        Server server = Server.get();
+        Bukkit.broadcastMessage(ChatColor.RED + "A Feast platform has been generated at X: " + this.getTable().getBlockX() + ", Z: " + this.getTable().getBlockZ() + ", World: " + (this.getWorld().getName().equalsIgnoreCase("world") ? "Overworld" : "Nether"));
     }
 
     public void spawnLoot() {
@@ -141,5 +190,7 @@ public class Feast {
         }
 
         this.getTable().getBlock().setType(Material.ENCHANTMENT_TABLE);
+
+        Bukkit.broadcastMessage(ChatColor.RED + "The Feast has been filled!");
     }
 }

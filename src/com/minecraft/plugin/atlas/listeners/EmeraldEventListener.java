@@ -55,6 +55,10 @@ public class EmeraldEventListener implements Listener {
         Player player = event.getPlayer();
 
         if (block.getType() == Material.EMERALD_BLOCK && arena.getPlayerList().containsKey(player.getUniqueId())) {
+            if (!block.getWorld().getName().equalsIgnoreCase("world")) {
+                event.setCancelled(true);
+                return;
+            }
             BlockState oldBlockState = arena.getPlayerList().get(player.getUniqueId());
             Block oldBlock = oldBlockState.getWorld().getBlockAt(oldBlockState.getLocation());
 

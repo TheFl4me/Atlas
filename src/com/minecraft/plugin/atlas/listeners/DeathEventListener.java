@@ -2,6 +2,7 @@ package com.minecraft.plugin.atlas.listeners;
 
 import com.minecraft.plugin.atlas.manager.Arena;
 import com.minecraft.plugin.atlas.Atlas;
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.BlockState;
@@ -65,7 +66,9 @@ public class DeathEventListener implements Listener {
     }
 
     @EventHandler
-    public void disableAchievement(PlayerAchievementAwardedEvent event) {
-        event.setCancelled(true);
+    public void disableAchievements(PlayerAchievementAwardedEvent event) {
+        if (!event.getAchievement().equals(Achievement.OPEN_INVENTORY)) {
+            event.setCancelled(true);
+        }
     }
 }

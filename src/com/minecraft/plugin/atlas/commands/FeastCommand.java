@@ -16,8 +16,6 @@ public class FeastCommand implements CommandExecutor {
             Arena arena = Atlas.getArena();
             Feast feast = new Feast();
             arena.addFeast(feast);
-            feast.spawn();
-            feast.spawnLoot();
             return true;
         }
         return false;
