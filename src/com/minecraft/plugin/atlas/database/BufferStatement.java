@@ -12,7 +12,7 @@ public class BufferStatement {
     private Exception stacktrace;
 
     /**
-     * Represents a PreparedStatement in a state before preparing it (E.g. No file I/O Required)
+     * Represents a Prepared Statement in a state before preparing it (E.g. No file I/O Required)
      *
      * @param query  The query to execute. E.g. INSERT INTO accounts (user, password) VALUES (?, ?)
      * @param values The values to replace <bold>?</bold> with in <bold>query</bold>.  These are in order.

@@ -1,19 +1,14 @@
 package com.minecraft.plugin.atlas.listeners;
 
-import com.minecraft.plugin.atlas.Arena;
+import com.minecraft.plugin.atlas.manager.Arena;
 import com.minecraft.plugin.atlas.Atlas;
 import com.minecraft.plugin.atlas.database.Database;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-
-import java.util.Random;
-import java.util.UUID;
 
 public class SpawnEventListener implements Listener {
 
@@ -24,6 +19,7 @@ public class SpawnEventListener implements Listener {
         Database db = Atlas.getDataBase();
 
         if (!db.containsValue(Atlas.DB_PLAYERS, "uuid", player.getUniqueId().toString())) {
+            player.setGameMode(GameMode.SURVIVAL);
             db.execute("INSERT INTO " + Atlas.DB_PLAYERS + " (" +
                     "uuid" +
                     ", alive" +

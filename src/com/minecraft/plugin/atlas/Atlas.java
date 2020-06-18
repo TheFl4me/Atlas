@@ -5,6 +5,7 @@ import com.minecraft.plugin.atlas.database.Database;
 import com.minecraft.plugin.atlas.database.DatabaseCore;
 import com.minecraft.plugin.atlas.database.MySQLCore;
 import com.minecraft.plugin.atlas.listeners.*;
+import com.minecraft.plugin.atlas.manager.Arena;
 import com.minecraft.plugin.atlas.utils.Server;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,6 +66,7 @@ public class Atlas extends JavaPlugin {
         getCommand("ping").setExecutor(new PingCommand());
         getCommand("status").setExecutor(new StatusCommand());
         getCommand("reset").setExecutor(new ResetCommand());
+        getCommand("feast").setExecutor(new FeastCommand());
     }
 
     private void loadEvents() {

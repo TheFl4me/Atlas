@@ -1,6 +1,6 @@
 package com.minecraft.plugin.atlas.listeners;
 
-import com.minecraft.plugin.atlas.Arena;
+import com.minecraft.plugin.atlas.manager.Arena;
 import com.minecraft.plugin.atlas.Atlas;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

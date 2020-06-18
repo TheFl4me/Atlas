@@ -1,6 +1,8 @@
-package com.minecraft.plugin.atlas;
+package com.minecraft.plugin.atlas.manager;
 
+import com.minecraft.plugin.atlas.Atlas;
 import com.minecraft.plugin.atlas.database.Database;
+import com.minecraft.plugin.atlas.manager.Feast;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -23,6 +25,7 @@ public class Arena {
     private Map<UUID, Location> locations;
     private List<UUID> alive;
     private Map<UUID, BukkitRunnable> combatLogTask;
+    private List<Feast> feasts;
     private int size;
     private boolean ingame;
 
@@ -31,6 +34,7 @@ public class Arena {
         this.locations = new HashMap<>();
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
+        this.feasts = new ArrayList<>();
         this.size = 200;
         this.ingame = true;
     }
@@ -323,5 +327,13 @@ public class Arena {
         this.addPlayer(player, emerald.getState());
         this.addAlive(player);
         this.addLocation(player, player.getLocation());
+    }
+
+    public void addFeast(Feast feast) {
+        this.feasts.add(feast);
+    }
+
+    public List<Feast> getFeasts() {
+        return this.feasts;
     }
 }
