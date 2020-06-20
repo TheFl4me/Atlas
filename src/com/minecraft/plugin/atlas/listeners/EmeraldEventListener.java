@@ -33,7 +33,7 @@ public class EmeraldEventListener implements Listener {
                 UUID target = Bukkit.getOfflinePlayer(arena.getEmeraldList().get(block.getState())).getUniqueId();
                 Location location = arena.getLastKnownLocations().get(target);
 
-                player.sendMessage(ChatColor.GOLD + "Your compass is now locked onto the last known position of this player (within the \"" + location.getWorld().getName() + "\" world) .");
+                player.sendMessage(ChatColor.GOLD + "Your compass is now locked onto the last known position of this player.");
                 player.setCompassTarget(location);
             } else {
                 player.sendMessage(ChatColor.RED + "You cant track yourself dumbass...");

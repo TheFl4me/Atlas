@@ -9,10 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,7 +31,7 @@ public class Arena {
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
         this.feasts = new ArrayList<>();
-        this.size = 25000;
+        this.size = 15000;
         this.ingame = true;
     }
 
@@ -81,18 +78,18 @@ public class Arena {
         world.setSpawnLocation(0 , 64,0);
         worldBorder.setCenter(0, 0);
         worldBorder.setSize(this.getSize());
-        world.setDifficulty(Difficulty.HARD);
+        world.setDifficulty(Difficulty.NORMAL);
 
         World nether = Bukkit.getWorld("world_nether");
         WorldBorder netherBorder = nether.getWorldBorder();
-        nether.setDifficulty(Difficulty.HARD);
+        nether.setDifficulty(Difficulty.NORMAL);
 
         netherBorder.setCenter(0,0);
-        netherBorder.setSize(this.getSize() / 8);
+        netherBorder.setSize((float) this.getSize() / 8);
 
         World end = Bukkit.getWorld("world_the_end");
         WorldBorder endBorder = end.getWorldBorder();
-        end.setDifficulty(Difficulty.HARD);
+        end.setDifficulty(Difficulty.NORMAL);
 
         endBorder.setCenter(0,0);
         endBorder.setSize(400);
@@ -118,6 +115,10 @@ public class Arena {
         block.setType(Material.AIR);
         blockState.setData(blockState.getData());
         blockState.update();
+
+        Location loc = this.getLastKnownLocations().get(player.getUniqueId());
+
+        loc.getWorld().strikeLightningEffect(loc);
 
         this.removePlayer(player);
         this.removeAlive(player);
@@ -273,13 +274,14 @@ public class Arena {
         Database db = Atlas.getDataBase();
         db.execute("DROP TABLE " + Atlas.DB_PLAYERS);
 
-        Bukkit.getServer().reload();
+        Bukkit.getServer().shutdown();
     }
 
     public void updateScoreboard() {
         for(Player players : Bukkit.getOnlinePlayers()) {
             ChatColor color = ChatColor.GRAY;
             Scoreboard board = players.getScoreboard();
+
             board.getObjectives().forEach(Objective::unregister);
 
             Objective obj = board.registerNewObjective("test", "dummy");

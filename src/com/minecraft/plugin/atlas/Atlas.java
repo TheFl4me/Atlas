@@ -72,7 +72,8 @@ public class Atlas extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeathEventListener(), this);
         getServer().getPluginManager().registerEvents(new LocationEventListener(), this);
         getServer().getPluginManager().registerEvents(new CombatLogEventListener(), this);
-        getServer().getPluginManager().registerEvents(new HealthEventListener(), this);
+        getServer().getPluginManager().registerEvents(new TrollEventListener(), this);
+        getServer().getPluginManager().registerEvents(new TrackEventListener(), this);
     }
 
     private void loadDatabase() {

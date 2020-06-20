@@ -21,6 +21,7 @@ public class DeathEventListener implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         Arena arena = Atlas.getArena();
+
         if(arena.isCombatLog(player)) {
             arena.cancelCombatLog(player);
         }
@@ -50,6 +51,7 @@ public class DeathEventListener implements Listener {
                 }
             }
             killer.setCompassTarget(state.getLocation());
+            killer.sendMessage(ChatColor.GOLD + "You are now tracking a random Emerald block!");
         }
     }
 

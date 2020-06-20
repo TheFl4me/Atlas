@@ -25,6 +25,9 @@ public enum ChestItem {
 
     BOOK(20, new ItemStack(Material.ENCHANTED_BOOK)),
 
+    WARTS(10, new ItemStack(Material.NETHER_WARTS)),
+    BLAZE_ROD(10, new ItemStack(Material.BLAZE_ROD)),
+
     HEAL_POT(20, new ItemStack(Material.POTION, 1 , (short) 16421)),
     REGEN_POT(20, new ItemStack(Material.POTION, 1 , (short) 16449)),
     STRENGTH_POT(5, new ItemStack(Material.POTION, 1 , (short) 16393)),
@@ -128,6 +131,8 @@ public enum ChestItem {
             case COOKED_BEEF:
             case EMERALD:
             case EXP_BOTTLE:
+            case WARTS:
+            case BLAZE_ROD:
                 return true;
             default:
                 return false;
