@@ -71,7 +71,7 @@ public class TrackEventListener implements Listener {
             next = next.getRelative(face);
         }
         if(next.getType() == Material.GOLD_BLOCK)
-            range = i * 100;
+            range = i * 150;
         return range;
     }
 }

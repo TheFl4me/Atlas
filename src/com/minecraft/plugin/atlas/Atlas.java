@@ -64,6 +64,7 @@ public class Atlas extends JavaPlugin {
         getCommand("reset").setExecutor(new ResetCommand());
         getCommand("feast").setExecutor(new FeastCommand());
         getCommand("eliminate").setExecutor(new EliminateCommand());
+        getCommand("track").setExecutor(new TrackCommand());
     }
 
     private void loadEvents() {

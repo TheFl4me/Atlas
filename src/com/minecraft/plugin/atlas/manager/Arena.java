@@ -31,7 +31,7 @@ public class Arena {
         this.alive = new ArrayList<>();
         this.combatLogTask = new HashMap<>();
         this.feasts = new ArrayList<>();
-        this.size = 15000;
+        this.size = 10000;
         this.ingame = true;
     }
 
@@ -78,18 +78,19 @@ public class Arena {
         world.setSpawnLocation(0 , 64,0);
         worldBorder.setCenter(0, 0);
         worldBorder.setSize(this.getSize());
-        world.setDifficulty(Difficulty.NORMAL);
 
         World nether = Bukkit.getWorld("world_nether");
         WorldBorder netherBorder = nether.getWorldBorder();
-        nether.setDifficulty(Difficulty.NORMAL);
 
         netherBorder.setCenter(0,0);
         netherBorder.setSize((float) this.getSize() / 8);
 
         World end = Bukkit.getWorld("world_the_end");
         WorldBorder endBorder = end.getWorldBorder();
-        end.setDifficulty(Difficulty.NORMAL);
+
+        for (World worlds : Bukkit.getWorlds()) {
+            worlds.setDifficulty(Difficulty.NORMAL);
+        }
 
         endBorder.setCenter(0,0);
         endBorder.setSize(400);
@@ -274,25 +275,43 @@ public class Arena {
         Database db = Atlas.getDataBase();
         db.execute("DROP TABLE " + Atlas.DB_PLAYERS);
 
-        Bukkit.getServer().shutdown();
+        Bukkit.getServer().reload();
     }
 
     public void updateScoreboard() {
         for(Player players : Bukkit.getOnlinePlayers()) {
-            ChatColor color = ChatColor.GRAY;
+
+            List<UUID> alive = new ArrayList<>();
+            List<UUID> dead = new ArrayList<>();
+
             Scoreboard board = players.getScoreboard();
 
             board.getObjectives().forEach(Objective::unregister);
 
             Objective obj = board.registerNewObjective("test", "dummy");
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-            obj.setDisplayName(ChatColor.GOLD + "Alive:");
+            obj.setDisplayName(ChatColor.GOLD + "Players:");
 
-            int i = 0;
-            for(UUID uuid : this.getAliveList()) {
+
+            for(UUID uuid : this.getLastKnownLocations().keySet()) {
                 OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 
-                Score name = obj.getScore(color + player.getName());
+                if (this.getAliveList().contains(uuid)) {
+                    alive.add(uuid);
+                } else {
+                    dead.add(uuid);
+                }
+            }
+
+            int i = 0;
+            for (UUID uuid : dead) {
+                Score name = obj.getScore(ChatColor.DARK_GRAY + Bukkit.getOfflinePlayer(uuid).getName());
+                name.setScore(i);
+                i++;
+            }
+
+            for (UUID uuid : alive) {
+                Score name = obj.getScore(ChatColor.GRAY + Bukkit.getOfflinePlayer(uuid).getName());
                 name.setScore(i);
                 i++;
             }

@@ -20,7 +20,8 @@ public enum ChestItem {
     COMPASS(2, new ItemStack(Material.COMPASS)),
 
     EXP_BOTTLE(30, new ItemStack(Material.EXP_BOTTLE)),
-    EMERALD(5, new ItemStack(Material.EMERALD)),
+    EMERALD(10, new ItemStack(Material.EMERALD)),
+    GOLD(15, new ItemStack(Material.GOLD_INGOT)),
     ENDER_PEARL(20, new ItemStack(Material.ENDER_PEARL)),
 
     BOOK(20, new ItemStack(Material.ENCHANTED_BOOK)),
@@ -30,7 +31,6 @@ public enum ChestItem {
 
     HEAL_POT(20, new ItemStack(Material.POTION, 1 , (short) 16421)),
     REGEN_POT(20, new ItemStack(Material.POTION, 1 , (short) 16449)),
-    STRENGTH_POT(5, new ItemStack(Material.POTION, 1 , (short) 16393)),
     POISON_POT(5, new ItemStack(Material.POTION, 1 , (short) 16452)),
     SPEED_POT(5, new ItemStack(Material.POTION, 1 , (short) 16418)),
     SLOW_POT(5, new ItemStack(Material.POTION, 1 , (short) 16394)),
@@ -133,6 +133,7 @@ public enum ChestItem {
             case EXP_BOTTLE:
             case WARTS:
             case BLAZE_ROD:
+            case GOLD:
                 return true;
             default:
                 return false;
